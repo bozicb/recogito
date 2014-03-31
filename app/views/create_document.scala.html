@@ -1,0 +1,20 @@
+@(documentForm: Form[GeoDocument])
+
+<html>
+	<head><title>RECOGITO</title></head>
+	<body>
+		<h3>Edit Document</h3>
+		@helper.form(routes.DocumentController.save()) {
+			<fieldset>
+				@helper.inputText(documentForm("title"), '_label -> "Title")
+				@helper.inputText(documentForm("author"), '_label -> "Author")
+				@helper.inputText(documentForm("title"), '_label -> "Date")
+				@helper.textarea(documentForm("title"), '_label -> "Description", 'rows -> 15, 'cols -> 50)
+			</fieldset>
+			
+			<div class="actions">
+            	<input type="submit" value="Create the document" class="btn primary">
+        	</div>
+		}
+	</body>
+</html>
