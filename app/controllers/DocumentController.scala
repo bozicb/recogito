@@ -6,6 +6,8 @@ import play.api.db.slick._
 import play.api.mvc.{ Action, Controller }
 import play.api.libs.json.{ Json, JsObject }
 import play.api.Play.current
+import play.api.data.Form
+import play.api.data.Forms._
 import org.openrdf.rio.RDFFormat
 import org.pelagios.Scalagios
 import org.pelagios.api.{ Annotation => OAnnotation }
@@ -26,6 +28,22 @@ object DocumentController extends Controller with Secured {
   private val CSV = "csv"
   private val RDF_XML = "rdfxml"
   private val UTF8 = "UTF-8"
+  
+  /**
+   * Describes the document form (used in both create and edit documents).
+   */
+  val documentForm = Form(
+	mapping(
+		"id" -> optional(number),
+		"author" -> optional(text), 
+		"title" -> text, 
+		"date" -> optional(number), 
+		"dateComment" -> optional(text),
+		"language" -> optional(text),
+		"description" -> optional(text),
+		"source" -> optional(text)
+	)(GeoDocument.apply)(GeoDocument.unapply)
+  )
   
   /** Returns the list of all geo documents in the database as JSON **/
   def listAll = DBAction { implicit session =>
@@ -103,4 +121,20 @@ object DocumentController extends Controller with Secured {
     Status(200)
   }
   
+  def create = Action {
+    Ok(views.html.create_document(documentForm))
+  }
+  
+  def save = protectedDBAction(Secure.REJECT) { implicit request => implicit session =>
+    documentForm.bindFromRequest.fold(
+    	formWithErrors => BadRequest(views.html.create_document(formWithErrors)),
+    	document => {GeoDocuments.insert(document)})
+    	Status(200)
+  }
+  
+  def update(id: Int) = DBAction { implicit session =>
+    val document = GeoDocuments.findById(id)
+    document map documentForm.fill
+    Ok(views.html.create_document(documentForm))
+  }
 }

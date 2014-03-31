@@ -46,7 +46,8 @@
       </div>
     </div>
     
-    <div id="container">    
+    <div id="container">   
+    <table><tr><td><a href="@routes.DocumentController.create" title="Create new document">New Document</a></td></tr></table> 
       <table>   
         <tbody>
           @for(doc <- models.GeoDocuments.listAll().sortBy(d => (d.date, d.author, d.title))) {
@@ -100,6 +101,7 @@
           	        <span class="icon public">&#xf0c0;</span>
           	      </a>
           	    </td>
+          	    <td class="update"><a href="@routes.DocumentController.update(doc.id.get)" class="text" title="Update Document">U</a></td>
           	  </tr>
           	}
           	

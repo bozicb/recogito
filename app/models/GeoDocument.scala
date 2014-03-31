@@ -58,6 +58,8 @@ object GeoDocuments extends Table[GeoDocument]("gdocuments") {
 
   def * = id.? ~ author.? ~ title ~ date.? ~ dateComment.? ~ language.? ~ description.? ~ source.? <> (GeoDocument.apply _, GeoDocument.unapply _)
   
+  def autoInc = * returning id
+  
   def listAll()(implicit s: Session): Seq[GeoDocument] = Query(GeoDocuments).list
   
   def findById(id: Int)(implicit s: Session): Option[GeoDocument] =
@@ -65,5 +67,8 @@ object GeoDocuments extends Table[GeoDocument]("gdocuments") {
     
   def delete(id: Int)(implicit s: Session) =
     Query(GeoDocuments).where(_.id === id).delete
+    
+  def insert(document: GeoDocument)(implicit s: Session) =
+    autoInc.insert(document)
   
 }
